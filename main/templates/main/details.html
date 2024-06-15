@@ -1,0 +1,149 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container">
+    <br>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <img src="https://image.tmdb.org/t/p/w500/{{ movie.poster_path }}" alt="{{ movie.title }}" class="img-fluid">
+                </div>
+                <div class="col-md-8">
+                    <h3 class="text-center">{{ movie.title }}</h3>
+                    <h5>Overview:</h5>
+                    <p>{{ movie.overview }}</p>
+                    <h5>Release Date:</h5>
+                    <p>{{ movie.release_date }}</p>
+                    <h5>Rating:</h5>
+                    <p>{{ average }}/10</p>
+                    <h5>Genres:</h5>
+                    <ul>
+                        {% for genre in movie.genres %}
+                        <li>{{ genre.name }}</li>
+                        {% endfor %}
+                    </ul>
+                    <h5>Cast:</h5>
+                    <ul>
+                        {% for member in cast|slice:":4" %}
+                        <li>{{ member.name }} as {{ member.character }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h3 class="text-center">Add Review and Rating</h3>
+            <form action="{% url 'main:add_review' movie.id %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="comment">Review</label>
+                    <textarea name="comment" id="comment" rows="5" class="form-control"></textarea>
+                </div>
+
+                <br>
+                <div class="form-group">
+                    <label for="rating">Rating: <span id="amount">0</span></label>
+                    <input type="range" id="rangeInput" name="rating" min="0" max="10" value="0" step="0.5" class="form-control-range" oninput="amount.textContent = rangeInput.value">
+                </div>
+
+                <input type="submit" value="Add Review" class="btn btn-danger btn-block">
+            </form>
+        </div>
+    </div>
+
+    <br>
+    <div class="card shadow-lg">
+        <div class="card-body">
+            <h3 class="text-center">All Reviews</h3>
+            {% for review in reviews %}
+                <div class="card my-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <h5 class="text-left">Username: {{ review.user.username }}</h5>
+                                <h5>Rating: {{ review.rating }}</h5>
+                                {% if request.user == review.user %}
+                                    <a href="{% url 'main:edit_review' movie.id review.id %}" class="btn btn-warning btn-sm mr-2">Edit Review</a>
+                                    <a href="{% url 'main:delete_review' movie.id review.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this review?');">Delete Review</a>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9">
+                                <h5>Review: {{ review.comment }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>    
+</div>
+
+<style>
+    body {
+        background-color: #000;
+    }
+    
+    /* Custom CSS for cards */
+    .card.shadow-lg {
+        border-radius: 15px;
+        border: none;
+        margin-bottom: 20px;
+    }
+
+    .card.shadow-lg .card-body {
+        padding: 20px;
+    }
+
+    .card.my-3 {
+        background-color: #f5eeee; /* Light background color */
+        border-radius: 10px;
+    }
+
+    .card.my-3 .card-body {
+        padding: 15px; /* Padding inside the review box */
+    }
+
+    .card.my-3 .row {
+        align-items: center; /* Align content vertically in the row */
+    }
+
+    .card.my-3 h5 {
+        margin-bottom: 5px; /* Margin bottom for headings */
+    }
+
+    .card.my-3 p {
+        margin-top: 10px; /* Margin top for paragraph */
+    }
+
+    /* Button Styling */
+    .btn {
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+
+    .btn.btn-sm {
+        padding: 0.3rem 0.75rem;
+    }
+
+    .btn.btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+    .btn.btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn.btn-warning:hover,
+    .btn.btn-danger:hover {
+        opacity: 0.9;
+    }
+</style>
+
+{% endblock %}

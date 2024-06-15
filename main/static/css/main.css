@@ -1,0 +1,10 @@
+body{
+    background-image: url('/static/images/background.jpg');
+    background-size: cover; /* Adjust this according to your design needs */
+    background-repeat: no-repeat;
+    height: 100vh;
+}
+
+#backdrop{
+    background-color :  #eef3ef;
+}
